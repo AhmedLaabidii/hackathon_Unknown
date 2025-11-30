@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>notebookfa81860c0c</title>
+  
+    <meta name="robots" content="index, follow">
+  <meta name="description" content="Build a model to predict stroke risk in a realistic, highly imbalanced clinical dataset.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
+  <meta name="theme-color" content="#008ABC">
+  <script src="./notebookfa81860c0c_files/cb=gapi.loaded_0" nonce="" async=""></script><script nonce="" type="text/javascript">
+    window["pageRequestStartTime"] = 1764486621699;
+    window["pageRequestEndTime"] = 1764486621711;
+    window["initialPageLoadStartTime"] = new Date().getTime();
+  </script>
+  <script nonce="" id="gsi-client" src="./notebookfa81860c0c_files/client" async="" defer=""></script>
+  <script nonce="">window.KAGGLE_JUPYTERLAB_PATH = "/static/assets/jupyterlab-v4/jupyterlab-index-130aa551eed36ad2c30c.html";</script>
+  <link rel="preconnect" href="https://www.google-analytics.com/" crossorigin="anonymous"><link rel="preconnect" href="https://stats.g.doubleclick.net/"><link rel="preconnect" href="https://storage.googleapis.com/"><link rel="preconnect" href="https://apis.google.com/">
+    
+  <link rel="manifest" href="https://www.kaggle.com/static/json/manifest.json" crossorigin="use-credentials">
+
+
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+
+  <link href="./notebookfa81860c0c_files/css" rel="preload" as="style">
+  <link href="./notebookfa81860c0c_files/css2" rel="preload" as="style">
+  <link href="./notebookfa81860c0c_files/css" rel="stylesheet" media="all" id="async-google-font-1">
+  <link href="./notebookfa81860c0c_files/css2" rel="stylesheet" media="all" id="async-google-font-2">
+  <script nonce="" type="text/javascript">
+    const styleSheetIds = ["async-google-font-1", "async-google-font-2"];
+    styleSheetIds.forEach(function (id) {
+      document.getElementById(id).addEventListener("load", function() {
+        this.media = "all";
+      });
+    });
+  </script>
+
+
+    <link rel="stylesheet" type="text/css" href="./notebookfa81860c0c_files/app.css">
+
+  
+    
+ 
+      <script nonce="">
+        try{(function(a,s,y,n,c,h,i,d,e){d=s.createElement("style");
+        d.appendChild(s.createTextNode(""));s.head.appendChild(d);d=d.sheet;
+        y=y.map(x => d.insertRule(x + "{ opacity: 0 !important }"));
+        h.start=1*new Date;h.end=i=function(){y.forEach(x => x<d.cssRules.length ? d.deleteRule(x) : {})};
+        (a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+        })(window,document,['.site-header-react__nav'],'dataLayer',2000,{'GTM-52LNT9S':true});}catch(ex){}
+    </script><style id="googleidentityservice_button_styles" nonce="">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:"Roboto-Regular",arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height linear .2s;transition:height linear .2s}.P1ekSe-ZMv3u>div:nth-child(1){background-color:#1a73e8!important;-webkit-transition:width linear .3s;transition:width linear .3s}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(to right,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(to right,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:"Google Sans",arial,sans-serif;font-size:14px;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:14px;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:11px;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:"Google Sans",arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:hover,.nsm7Bb-HzV7m-LgbsSe:focus{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:"Roboto";font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><style></style>
+    <script nonce="">
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-T7QHS60L4Q', {
+            'optimize_id': 'GTM-52LNT9S',
+            'displayFeaturesTask': null,
+            'send_page_view': false,
+            'content_group1': 'Competitions',
+            'user_properties': {
+                'logged_in': true,
+            }
+        });
+    </script>
+    <script nonce="" async="" src="./notebookfa81860c0c_files/js"></script>
+
+  
+    
+    <meta property="og:title" content="Sesame-JCI-Stroke-Prediction">
+    <meta property="og:description" content="Build a model to predict stroke risk in a realistic, highly imbalanced clinical dataset.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kaggle.com/sesame-jci-stroke-prediction">
+    <meta property="og:image" content="https://kaggle.com/competitions/124594/images/header">
+
+    <meta property="twitter:title" content="Sesame-JCI-Stroke-Prediction">
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:site" content="@kaggle">
+    <meta property="twitter:image" content="https://kaggle.com/competitions/124594/images/header">
+
+
+  <meta name="twitter:site" content="@Kaggle"> 
+  
+    
+
+  
+    
+
+  
+    
+
+
+    <script nonce="">window['useKaggleAnalytics'] = true;</script>
+
+  <script id="gapi-target" nonce="" src="./notebookfa81860c0c_files/api.js.téléchargement" defer="" async="" gapi_processed="true"></script>
+  <script nonce="" src="./notebookfa81860c0c_files/runtime.js.téléchargement"></script>
+  <script nonce="" src="./notebookfa81860c0c_files/vendor.js.téléchargement"></script>
+  <script nonce="" src="./notebookfa81860c0c_files/app.js.téléchargement"></script><style id="_goober"> .go1475592160{height:0;}.go1671063245{height:auto;}.go1888806478{display:flex;flex-wrap:wrap;flex-grow:1;}@media (min-width:600px){.go1888806478{flex-grow:initial;min-width:288px;}}.go167266335{background-color:#313131;font-size:0.875rem;line-height:1.43;letter-spacing:0.01071em;color:#fff;align-items:center;padding:6px 16px;border-radius:4px;box-shadow:0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12);}.go3162094071{padding-left:20px;}.go3844575157{background-color:#313131;}.go1725278324{background-color:#43a047;}.go3651055292{background-color:#d32f2f;}.go4215275574{background-color:#ff9800;}.go1930647212{background-color:#2196f3;}.go946087465{display:flex;align-items:center;padding:8px 0;}.go703367398{display:flex;align-items:center;margin-left:auto;padding-left:16px;margin-right:-8px;}.go3963613292{width:100%;position:relative;transform:translateX(0);top:0;right:0;bottom:0;left:0;min-width:288px;}.go1141946668{box-sizing:border-box;display:flex;max-height:100%;position:fixed;z-index:1400;height:auto;width:auto;transition:top 300ms ease 0ms,right 300ms ease 0ms,bottom 300ms ease 0ms,left 300ms ease 0ms,max-width 300ms ease 0ms;pointer-events:none;max-width:calc(100% - 40px);}.go1141946668 .notistack-CollapseWrapper{padding:6px 0px;transition:padding 300ms ease 0ms;}@media (max-width:599.95px){.go1141946668{width:100%;max-width:calc(100% - 32px);}}.go3868796639 .notistack-CollapseWrapper{padding:2px 0px;}.go3118922589{top:14px;flex-direction:column;}.go1453831412{bottom:14px;flex-direction:column-reverse;}.go4027089540{left:20px;}@media (min-width:600px){.go4027089540{align-items:flex-start;}}@media (max-width:599.95px){.go4027089540{left:16px;}}.go2989568495{right:20px;}@media (min-width:600px){.go2989568495{align-items:flex-end;}}@media (max-width:599.95px){.go2989568495{right:16px;}}.go4034260886{left:50%;transform:translateX(-50%);}@media (min-width:600px){.go4034260886{align-items:center;}}</style>
+    <script nonce="" type="text/javascript">
+      window.kaggleStackdriverConfig = {
+        key: 'AIzaSyA4eNqUdRRskJsCZWVz-qL655Xa5JEMreE',
+        projectId: 'kaggle-161607',
+        service: 'web-fe',
+        version: 'ci',
+        userId: '30941743'
+      }
+    </script>
+<style data-styled="active" data-styled-version="6.1.19"></style><style>:root {
+  /* Color Scheme */
+  --background-color: #1c1d20;
+  --primary-text-color: rgba(255, 255, 255, 0.87);
+  --secondary-text-color: rgba(255, 255, 255, 0.6);
+  --divider-color: #2f3136;
+  --control-background-color: #2a2d31;
+  --accent-color: #1ebeff;
+  --disabled-opacity: 0.4;
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: var(--primary-text-color);
+  background-color: var(--background-color);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.player {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--background-color);
+  box-sizing: border-box;
+}
+
+.viewer {
+  flex-grow: 1;
+  position: relative;
+}
+
+.viewer canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.legend {
+  background-color: var(--background-color);
+  font-family: sans-serif;
+  font-size: 14px;
+  min-height: 48px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.legend ul {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.legend li {
+  align-items: center;
+  display: inline-flex;
+  transition: color 1s;
+  padding: 0 16px;
+}
+
+.legend span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.legend img {
+  height: 24px;
+  margin-left: 4px;
+  margin-right: 4px;
+  width: 24px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: var(--control-background-color);
+  border-top: 1px solid var(--divider-color);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.controls button {
+  background: none;
+  border: none;
+  color: var(--primary-text-color);
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls button svg {
+  fill: var(--primary-text-color);
+}
+
+.controls button:hover {
+  opacity: 1;
+}
+
+.controls button:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.controls input[type="range"] {
+  flex-grow: 1;
+  width: 100%;
+  margin: 0 16px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(128, 128, 128, 0.25);
+  border-radius: 4px;
+  height: 6px;
+  outline: none;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.controls input[type="range"]:hover {
+  opacity: 1;
+}
+
+.controls input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--accent-color);
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.controls input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--accent-color);
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.step-counter {
+  color: var(--secondary-text-color);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  min-width: 80px;
+  text-align: center;
+}
+</style><style data-emotion="css-global" data-s=""></style><style data-emotion="css-global" data-s=""></style><style data-emotion="css" data-s=""></style><link rel="stylesheet" type="text/css" href="./notebookfa81860c0c_files/KernelEditor.56ec1322d855ad0f5482.css"><link id="dynamic-favicon" rel="shortcut icon" type="image/x-icon" href="https://www.kaggle.com/favicon.ico"><link rel="stylesheet" type="text/css" href="./notebookfa81860c0c_files/2736.f5129f48620a03126642.css"><script type="text/x-mathjax-config;executed=true">
+MathJax.Hub.Config({
+jax: ["input/TeX", "output/SVG"],
+"HTML-CSS": {
+preferredFont: "TeX",
+availableFonts: ["STIX", "TeX"],
+linebreaks: {
+automatic: true
+},
+EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+},
+tex2jax: {
+processEscapes: true,
+ignoreClass: "tex2jax_ignore|dno"
+},
+TeX: {
+noUndefined: {
+attributes: {
+mathcolor: "red",
+mathbackground: "#FFEEEE",
+mathsize: "90%"
+}
+}
+},
+Macros: {
+href: "{}"
+},
+skipStartupTypeset: false,
+messageStyle: "none",
+extensions: ["Safe.js"],
+});
+</script><script type="text/javascript" src="./notebookfa81860c0c_files/MathJax.js.téléchargement"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888; display: contents}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover, .MJXp-munder {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > *, .MJXp-munder > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_SVG_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax_SVG .MJX-monospace {font-family: monospace}
+.MathJax_SVG .MJX-sans-serif {font-family: sans-serif}
+#MathJax_SVG_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax_SVG {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax_SVG * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_SVG > div {display: inline-block}
+.mjx-svg-href {fill: blue; stroke: blue}
+.MathJax_SVG_Processing {visibility: hidden; position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: hidden; display: block!important}
+.MathJax_SVG_Processed {display: none!important}
+.MathJax_SVG_test {font-style: normal; font-weight: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-transform: none; letter-spacing: normal; word-spacing: normal; overflow: hidden; height: 1px}
+.MathJax_SVG_test.mjx-test-display {display: table!important}
+.MathJax_SVG_test.mjx-test-inline {display: inline!important; margin-right: -1px}
+.MathJax_SVG_test.mjx-test-default {display: block!important; clear: both}
+.MathJax_SVG_ex_box {display: inline-block!important; position: absolute; overflow: hidden; min-height: 0; max-height: none; padding: 0; border: 0; margin: 0; width: 1px; height: 60ex}
+.mjx-test-inline .MathJax_SVG_left_box {display: inline-block; width: 0; float: left}
+.mjx-test-inline .MathJax_SVG_right_box {display: inline-block; width: 0; float: right}
+.mjx-test-display .MathJax_SVG_right_box {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax_SVG .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><link rel="stylesheet" type="text/css" href="./notebookfa81860c0c_files/KernelViewer.56ec1322d855ad0f5482.css"></head>
+<body style="background-color: rgb(255, 255, 255);"><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_SVG_Hidden"></div><svg><defs id="MathJax_SVG_glyphs"><path stroke-width="1" id="MJMATHI-54" d="M40 437Q21 437 21 445Q21 450 37 501T71 602L88 651Q93 669 101 677H569H659Q691 677 697 676T704 667Q704 661 687 553T668 444Q668 437 649 437Q640 437 637 437T631 442L629 445Q629 451 635 490T641 551Q641 586 628 604T573 629Q568 630 515 631Q469 631 457 630T439 622Q438 621 368 343T298 60Q298 48 386 46Q418 46 427 45T436 36Q436 31 433 22Q429 4 424 1L422 0Q419 0 415 0Q410 0 363 1T228 2Q99 2 64 0H49Q43 6 43 9T45 27Q49 40 55 46H83H94Q174 46 189 55Q190 56 191 56Q196 59 201 76T241 233Q258 301 269 344Q339 619 339 625Q339 630 310 630H279Q212 630 191 624Q146 614 121 583T67 467Q60 445 57 441T43 437H40Z"></path><path stroke-width="1" id="MJMATHI-50" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path stroke-width="1" id="MJMATHI-52" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path><path stroke-width="1" id="MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path stroke-width="1" id="MJMAIN-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path stroke-width="1" id="MJMATHI-46" d="M48 1Q31 1 31 11Q31 13 34 25Q38 41 42 43T65 46Q92 46 125 49Q139 52 144 61Q146 66 215 342T285 622Q285 629 281 629Q273 632 228 634H197Q191 640 191 642T193 659Q197 676 203 680H742Q749 676 749 669Q749 664 736 557T722 447Q720 440 702 440H690Q683 445 683 453Q683 454 686 477T689 530Q689 560 682 579T663 610T626 626T575 633T503 634H480Q398 633 393 631Q388 629 386 623Q385 622 352 492L320 363H375Q378 363 398 363T426 364T448 367T472 374T489 386Q502 398 511 419T524 457T529 475Q532 480 548 480H560Q567 475 567 470Q567 467 536 339T502 207Q500 200 482 200H470Q463 206 463 212Q463 215 468 234T473 274Q473 303 453 310T364 317H309L277 190Q245 66 245 60Q245 46 334 46H359Q365 40 365 39T363 19Q359 6 353 0H336Q295 2 185 2Q120 2 86 2T48 1Z"></path><path stroke-width="1" id="MJMATHI-4E" d="M234 637Q231 637 226 637Q201 637 196 638T191 649Q191 676 202 682Q204 683 299 683Q376 683 387 683T401 677Q612 181 616 168L670 381Q723 592 723 606Q723 633 659 637Q635 637 635 648Q635 650 637 660Q641 676 643 679T653 683Q656 683 684 682T767 680Q817 680 843 681T873 682Q888 682 888 672Q888 650 880 642Q878 637 858 637Q787 633 769 597L620 7Q618 0 599 0Q585 0 582 2Q579 5 453 305L326 604L261 344Q196 88 196 79Q201 46 268 46H278Q284 41 284 38T282 19Q278 6 272 0H259Q228 2 151 2Q123 2 100 2T63 2T46 1Q31 1 31 10Q31 14 34 26T39 40Q41 46 62 46Q130 49 150 85Q154 91 221 362L289 634Q287 635 234 637Z"></path></defs></svg></div><div id="MathJax_Message" style="display: none;"></div>
+  <div id="root"><nav aria-label="Main Kaggle page navigation" class="sc-bjzMPS iZRUOq"><div class="sc-fFrLqr hEHtyj"><div class="sc-ffIBOD dKRkqd"><div class="sc-eNLTQs jQRbPa"><button aria-label="Navigation menu" title="Navigation menu" class="sc-koBvLg bYJwBT google-symbols notranslate">menu</button></div><a href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#site-content" class="sc-JQDoe iXfHEZ">Skip to<br>content</a><div class="sc-jjDSqR kUUyDE"><a href="https://www.kaggle.com/" aria-label="Return to Kaggle home page"><img src="./notebookfa81860c0c_files/site-logo.svg" alt="Kaggle" class="sc-iKHArB knPRjS"></a></div></div></div><div class="sc-dRpCaM fFdrMO"><button class="sc-fgnnHK PKjEX"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;"><path fill-rule="evenodd" clip-rule="evenodd" d="M20 30L20 16L16 20L16 30L20 30Z" fill="#20BEFF"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M20 20L30 20L30 16L20 16L20 20Z" fill="#20BEFF"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M16 20L20 16L15.937 16L6 16L6 20L16 20Z" fill="#20BEFF"></path><rect x="20" y="16" width="4" height="10" transform="rotate(-180 20 16)" fill="#20BEFF"></rect></svg><span class="sc-hwddKA sc-jCfmij fbkSVc dLcWXX">Create</span></button></div><div class="sc-inhABl YJLUi"><div class="sc-mqDxO hRMXf"><div class="sc-ouTEB ilGUXR"><div class="sc-bVnBcQ hHXlwG"><div class="sc-iXANDt LHFzk"><div class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root sc-fEETNT dQTfeE css-feqhe6"><div class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-omz4rr"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true" style="margin-right: 8px;">search</span><input aria-invalid="false" autocomplete="off" id=":r5:" placeholder="Search" type="text" class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-r1vfnz" value=""><fieldset aria-hidden="true" class="MuiOutlinedInput-notchedOutline css-igs3ac"><legend class="css-ihdtdm"><span class="notranslate">​</span></legend></fieldset></div></div></div></div><ul class="MuiList-root km-list css-1uzmcsd" role="list"><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Home List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Home" tabindex="0" href="https://www.kaggle.com/" data-click-log-id="home" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Home" aria-label="Home">explore</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Home</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Competitions List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Competitions" tabindex="0" href="https://www.kaggle.com/competitions" data-click-log-id="competitions" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Competitions" aria-label="Competitions">emoji_events</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Competitions</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Datasets List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Datasets" tabindex="0" href="https://www.kaggle.com/datasets" data-click-log-id="datasets" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Datasets" aria-label="Datasets">table_chart</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Datasets</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Models List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Models" tabindex="0" href="https://www.kaggle.com/models" data-click-log-id="models" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Models" aria-label="Models">tenancy</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Models</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Benchmarks List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Benchmarks" tabindex="0" href="https://www.kaggle.com/benchmarks" data-click-log-id="benchmarks" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Benchmarks" aria-label="Benchmarks">leaderboard</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Benchmarks</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Game Arena List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Game Arena" tabindex="0" href="https://www.kaggle.com/game-arena" data-click-log-id="game-arena" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Game Arena" aria-label="Game Arena">smart_toy</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Game Arena</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Code List Item"><div class="sc-eXVaYZ kFGCxo sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Code" tabindex="0" href="https://www.kaggle.com/code" data-click-log-id="code" role="link" class="sc-fpikKz brCOKE" aria-current="page"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Code" aria-label="Code">code</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo ktDYxp" style="padding-left: 4px;">Code</p><div class="sc-eYRUSB glOaRS"></div></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Discussions List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Discussions" tabindex="0" href="https://www.kaggle.com/discussions" data-click-log-id="discussions" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Discussions" aria-label="Discussions">comment</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Discussions</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Kaggle Learn List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Kaggle Learn" tabindex="0" href="https://www.kaggle.com/learn" data-click-log-id="learn" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Learn" aria-label="Learn">school</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Learn</p></div></div></a></div></li></ul><ul class="MuiList-root km-list css-1uzmcsd" role="list"><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="More on Kaggle List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-current="false" aria-expanded="false" aria-label="More on Kaggle" tabindex="0" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#" data-click-log-id="more" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="More" aria-label="More">expand_more</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">More</p></div></div></a></div></li></ul></div><div><div role="separator" class="sc-itBLYH ddKzBb sc-jkqJTp kiPKnd"></div><ul><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Your Work List Item"><div class="sc-eXVaYZ idRORJ sc-eUkiUm hwmgS km-listitem--small"><a aria-label="Your Work" tabindex="0" href="https://www.kaggle.com/work" data-click-log-id="your-work" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-jqchuL hfITES css-1jgtvd5" aria-hidden="true" title="Your Work" aria-label="Your Work">note_alt</span></div></div><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno"><p class="sc-dNdcvo cDXsBO" style="padding-left: 4px;">Your Work</p></div></div></a></div></li><li><button aria-label="Collapse Viewed" class="sc-egFxlz fjrPbd"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate css-1jgtvd5" aria-hidden="true">arrow_drop_down</span><span class="sc-eQwNpu sc-fNyeJO hIQOKp gwbxkU">Viewed</span></button><ul class="MuiList-root km-list sc-YerKM dwciFs css-1uzmcsd" role="list"><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Sesame-JCI-Stroke-Prediction List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="Sesame-JCI-Stroke-Prediction" tabindex="0" href="https://www.kaggle.com/competitions/sesame-jci-stroke-prediction" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/molnar-1-thumb-muted-03.png" alt="" width="20" height="20" class="sc-eOyLsQ eQVpEP"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">Sesame-JCI-Stroke-Prediction</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="PlantVillage Dataset List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="PlantVillage Dataset" tabindex="0" href="https://www.kaggle.com/datasets/abdallahalidev/plantvillage-dataset" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/dataset-thumbnail.png" alt="" width="20" height="20" class="sc-eOyLsQ eQVpEP"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">PlantVillage Dataset</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Running Kaggle Kernels with a GPU List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="Running Kaggle Kernels with a GPU" tabindex="0" href="https://www.kaggle.com/code/dansbecker/running-kaggle-kernels-with-a-gpu" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/9028-fb.jpg" alt="" width="20" height="20" class="sc-eOyLsQ jhxUNv"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">Running Kaggle Kernels with a GPU</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="ASL Alphabet List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="ASL Alphabet" tabindex="0" href="https://www.kaggle.com/datasets/grassknoted/asl-alphabet" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/dataset-thumbnail.jpg" alt="" width="20" height="20" class="sc-eOyLsQ eQVpEP"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">ASL Alphabet</p></div></div></a></div></li></ul></li><li><button aria-label="Collapse Edited" class="sc-egFxlz fjrPbd"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate css-1jgtvd5" aria-hidden="true">arrow_drop_down</span><span class="sc-eQwNpu sc-fNyeJO hIQOKp gwbxkU">Edited</span></button><ul class="MuiList-root km-list sc-YerKM dwciFs css-1uzmcsd" role="list"><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="notebookfa81860c0c List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="notebookfa81860c0c" tabindex="0" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/30941743-gr.jpg" alt="" width="20" height="20" class="sc-eOyLsQ jhxUNv"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">notebookfa81860c0c</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="notebookb9ec392b1c List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="notebookb9ec392b1c" tabindex="0" href="https://www.kaggle.com/code/fandoulihedi/notebookb9ec392b1c" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/30941743-gr.jpg" alt="" width="20" height="20" class="sc-eOyLsQ jhxUNv"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">notebookb9ec392b1c</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="notebook943e79413c List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="notebook943e79413c" tabindex="0" href="https://www.kaggle.com/code/fandoulihedi/notebook943e79413c" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/30941743-gr.jpg" alt="" width="20" height="20" class="sc-eOyLsQ jhxUNv"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">notebook943e79413c</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="notebook5dbc21cda0 List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="notebook5dbc21cda0" tabindex="0" href="https://www.kaggle.com/code/fandoulihedi/notebook5dbc21cda0" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/30941743-gr.jpg" alt="" width="20" height="20" class="sc-eOyLsQ jhxUNv"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">notebook5dbc21cda0</p></div></div></a></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="notebook3685392ef9 List Item"><div class="sc-eXVaYZ idRORJ sc-Ybpel fYlThQ km-listitem--dense"><a aria-label="notebook3685392ef9" tabindex="0" href="https://www.kaggle.com/code/fandoulihedi/notebook3685392ef9" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/30941743-gr.jpg" alt="" width="20" height="20" class="sc-eOyLsQ jhxUNv"></div></div><div class="sc-kCuUfV sc-bjxVRI imQvTu dEeLno"><p class="sc-fbQrwq sc-cETWCA kHxwkV krLpwO">notebook3685392ef9</p></div></div></a></div></li></ul></li><li></li></ul></div></div><div class="sc-eIiBYn kofgbs"><button class="sc-Ylkqq hGxrhZ"><div class="sc-eEovll ehakwQ"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fIphHV notranslate sc-mDKyu jRqoxA css-1jgtvd5" aria-hidden="true" aria-label="Open Active Events dialog">auto_awesome_motion</span><div class="sc-hOznEx jxWpnl">1</div></div><p class="sc-dNdcvo sc-gLzvBf cDXsBO djOdUm">View Active Events</p></button></div></div></nav><nav aria-label="Main menu, search and your account" class="sc-fSwKIM iVsMfj"><div class="sc-GjvTv bFEAUD"><div class="sc-ffIBOD dKRkqd"><div class="sc-eNLTQs jQRbPa"><button aria-label="Navigation menu" title="Navigation menu" class="sc-koBvLg bYJwBT google-symbols notranslate">menu</button></div><a href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#site-content" class="sc-JQDoe iXfHEZ">Skip to<br>content</a><div class="sc-jjDSqR kUUyDE"><a href="https://www.kaggle.com/" aria-label="Return to Kaggle home page"><img src="./notebookfa81860c0c_files/site-logo.svg" alt="Kaggle" class="sc-iKHArB knPRjS"></a></div></div></div><div class="sc-hndUf krlwxd"><div class="sc-cbrqwu gdFTII"><div class="sc-iXANDt LHFzk"><div class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root sc-fEETNT dQTfeE css-feqhe6"><div class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-omz4rr"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true" style="margin-right: 8px;">search</span><input aria-invalid="false" autocomplete="off" id=":r42:" placeholder="Search" type="text" class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-r1vfnz" value=""><fieldset aria-hidden="true" class="MuiOutlinedInput-notchedOutline css-igs3ac"><legend class="css-ihdtdm"><span class="notranslate">​</span></legend></fieldset></div></div></div></div><div class="sc-dYsygx mJZPh"><div class="sc-gJUwzu SoXCn"><div class="sc-bEXoF icIXSy"><div class="sc-gkYeAe elAOgR"><div class="sc-eEfxbP dsGvHB"></div><div class="sc-lehtBJ bcdcCJ sc-fdbPbf hqAhoR" aria-label="fandouli_hedi" role="button" tabindex="0"><div data-testid="avatar-image" title="fandouli_hedi" class="sc-bvErBc eRpkug" style="background-image: url(&quot;https://storage.googleapis.com/kaggle-avatars/thumbnails/30941743-gr.jpg&quot;);"></div><svg width="32" height="32" viewBox="0 0 32 32"><circle r="15" cx="16" cy="16" fill="none" stroke-width="2" style="stroke: rgb(241, 243, 244);"></circle><circle r="15" cx="16" cy="16" fill="none" stroke-width="2" style="stroke: rgb(32, 190, 255);"></circle></svg></div></div></div></div></div></div></nav><div id="site-content" class="sc-gdmatS iNGbIP legacy-less-light-theme" role="main"><div class="sc-emMPjM dFQanz"></div><div><div data-testid="notebook-detail-render-tid" class="sc-dBKbBc gmEQgy"><div class="sc-HABRJ jmqYvk"><div height="1px" class="sc-hZWYh drflkZ"></div><div class="sc-dwEJtG fVOUKt"><div class="sc-eOfwBW kzElTW"><a href="https://www.kaggle.com/fandoulihedi" aria-label="fandouli_hedi&#39;s profile" class="sc-lehtBJ bcdcCJ"><div data-testid="avatar-image" title="fandouli_hedi" class="sc-bvErBc eRpkug" style="background-image: url(&quot;https://storage.googleapis.com/kaggle-avatars/thumbnails/30941743-gr.jpg&quot;);"></div><svg width="32" height="32" viewBox="0 0 32 32"><circle r="15" cx="16" cy="16" fill="none" stroke-width="2" style="stroke: rgb(241, 243, 244);"></circle><circle r="15" cx="16" cy="16" fill="none" stroke-width="2" style="stroke: rgb(32, 190, 255);"></circle></svg></a><span style="flex: 1 1 0%; margin-left: 16px;"><span><span class="sc-eQwNpu hIQOKp">fandouli_hedi </span></span><span class="sc-eQwNpu hIQOKp"> · <span class="sc-SIlez eXlLMp" title="Sun Nov 30 2025 08:25:38 GMT+0100 (heure normale d’Afrique de l’Ouest)" aria-label="5 minutes ago">5m ago</span> · Private</span></span><div class="sc-idPGCT kVWJcR"><div><div class="sc-flkahu brXbfI"><button mode="default" data-testid="upvotebutton__upvote" aria-label="Upvote" class="sc-duKOXo sc-cHijrb hWKQkN jOmrwx"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true">arrow_drop_up</span></button><button mode="default" aria-label="0 votes" aria-live="polite" class="sc-duKOXo sc-eoaQPq hWKQkN cJIHJd">0</button></div></div><button tabindex="0" role="button" class="sc-pYNGo jwTgeH"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa dZzYCt notranslate css-1jgtvd5" aria-hidden="true">lock</span><span class="sc-fVHBlr gHmzEf">Share</span></button><a tabindex="0" class="sc-eknHtZ bwgtIq" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/edit/run/282801990" data-discover="true"><button class="sc-pYNGo eWiRij sc-kEBmjL CtfyE" tabindex="-1" role="button"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa fUyeHq notranslate css-1jgtvd5" aria-hidden="true">edit</span><span class="sc-fVHBlr gHmzEf">Edit</span></button></a><div><button aria-label="More options for this notebook" title="More options for this notebook" class="sc-koBvLg bYJwBT google-symbols notranslate">more_vert</button></div></div></div><div wrap="hide" class="sc-jYwrAs CJunf sc-gLgElZ chdLub"><div class="sc-guPfGz eukZsY"><div class="sc-cBMBaQ iROLlk"><h1 class="sc-lgpSej sc-cnHhbx ksHbNq AnYbw">notebookfa81860c0c</h1><button aria-label="Edit title" title="Edit title" class="sc-koBvLg kdyqor google-symbols notranslate sc-fIifcM hkeTQj">edit</button></div><span class="sc-hwddKA sc-ghOvAx gUGhRz irbTHu" style="margin-bottom: 0px; max-width: 894px;"></span></div><div wrap="hide" class="sc-kXiizz cZTMEf" style="align-self: unset;"></div></div></div><div height="1px" class="sc-hZWYh drflkZ"></div><div class="sc-hSwHUf kbQcZf"><div class="sc-dwEJtG fVOUKt"><div class="sc-iFkQOo caiHjh"><div class="sc-jiQZmP ddgpvY"><div class="sc-lcVlPe cwdTcP"><h2 class="sc-dntSTA sc-bKAKal bNPaHD eXQSzf"></h2></div></div><div class="sc-dEEWCA hDvaVV"><div class="MuiTabs-root sc-eUJmUS bhrcjP sc-dgUxlz doyykB css-pc1mzd"><div class="MuiTabs-scrollableX MuiTabs-hideScrollbar css-oqr85h" style="width: 99px; height: 99px; position: absolute; top: -9999px; overflow: scroll;"></div><div class="MuiTabs-scroller MuiTabs-hideScrollbar MuiTabs-scrollableX css-12qnib" style="margin-bottom: 0px;"><div class="MuiTabs-flexContainer css-k008qs" role="tablist"><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary Mui-selected sc-bhjLtx gjRJZI css-i5k1e3" tabindex="0" role="tab" aria-selected="true" aria-label="Notebook, 1 of 6" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/notebook" data-discover="true"><span class="sc-hwddKA eMTvcI">Notebook</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx gjRJZI css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="Input, 2 of 6" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/input" data-discover="true"><span class="sc-hwddKA gUGhRz">Input</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx gjRJZI css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="Output, 3 of 6" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/output" data-discover="true"><span class="sc-hwddKA gUGhRz">Output</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx gjRJZI css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="Logs, 4 of 6" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/log" data-discover="true"><span class="sc-hwddKA gUGhRz">Logs</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx gjRJZI css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="Comments (0), 5 of 6" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/comments" data-discover="true"><span class="sc-hwddKA gUGhRz">Comments (0)</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx gjRJZI css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="Settings, 6 of 6" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c/settings" data-discover="true"><span class="sc-hwddKA gUGhRz">Settings</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a></div><span class="MuiTabs-indicator css-zn1p7a" style="left: 0px; width: 73.825px;"></span></div></div></div></div></div><div role="separator" class="sc-itBLYH opqTs sc-boKDdR gRXFJN sc-dDEBgH ebbTan"></div></div><div class="sc-fIYaJG ixXDox"><div class="sc-kfEUkv ixtgOr"><div class="sc-jZWngk jfFVce"><button tabindex="0" role="button" class="sc-pYNGo jwTgeH"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa dZzYCt notranslate css-1jgtvd5" aria-hidden="true">history</span><span class="sc-fVHBlr gHmzEf">Version 1 of 1</span></button><button aria-label="Collapse Sidebar" id="notebook-side-bar-trigger" title="Collapse Sidebar" class="sc-koBvLg kdyqor google-symbols notranslate" style="margin-left: 20px;">chevron_right</button><h2 class="sc-dFVmKS sc-gXOwSl fpqYfg cvIWdt">Runtime</h2><div style="display: flex;"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true" style="margin-right: 10px; margin-left: -8px;">play_arrow</span><p class="sc-fbQrwq sc-NuEbr jnmBCO iNYxSZ">43s</p></div><div><h2 aria-label="Go to input tab" role="button" class="sc-dFVmKS sc-gXOwSl sc-iCLYCj fpqYfg cvIWdt UQQeq">Input</h2><div style="margin-bottom: 12px;"><div><span class="sc-eQwNpu cIaSPS">COMPETITIONS</span></div><div style="margin-top: 12px; cursor: pointer;"><div class="sc-ogpeG sc-ldOawb hMHkVq bETGPF"><div aria-hidden="true" class="sc-imzFIS dpTZrz"><img src="./notebookfa81860c0c_files/thumbnail" alt="" class="sc-iWjVhR bVuJVi"></div><div class="sc-dgKwFp iaFxVI"><span class=""><div><p class="sc-fbQrwq sc-Ojqwo jnmBCO dOhxKX">Sesame-JCI-Stroke-Prediction</p></div></span></div></div></div></div></div><h2 class="sc-dFVmKS sc-gXOwSl fpqYfg cvIWdt">Tags</h2><div style="margin-top: 16px;"><button tabindex="0" role="button" class="sc-pYNGo cfktCu"><span class="sc-fVHBlr gHmzEf">Add Tags</span></button></div><h2 class="sc-dFVmKS sc-gXOwSl fpqYfg cvIWdt">Language</h2><p class="sc-fbQrwq sc-NuEbr jnmBCO iNYxSZ">Python</p><div class="sc-fhfgRC ecdTIJ sc-ktKojO diKQAK"><div class="MuiDrawer-root MuiDrawer-docked sc-fOOuSg fWHWlD sc-iOzHiM jHmXFW css-1tu59u4"><div class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiDrawer-paper MuiDrawer-paperAnchorRight MuiDrawer-paperAnchorDockedRight css-zvl8bm"><div class="drawer-outer-container" style="height: 100%;"><div style="transform: none; transition: transform 225ms cubic-bezier(0, 0, 0.2, 1);"><div class="sc-cpclqO crqnha sc-cwuAzd hmJJRT"><h2 class="sc-kCuUfV sc-gFRtca bXQAUF lfeNpy" style="flex-grow: 1;">Table of Contents</h2></div><div class="sc-iIvHqT ydtkY sc-nMmsr mtRKu"><div class="MuiTabs-root MuiTabs-vertical sc-eUJmUS lgnEra sc-cAaGAr dyAyCf css-6hrzpk"><div class="css-oqr85h" style="width: 99px; height: 99px; position: absolute; top: -9999px; overflow: scroll;"></div><div class="MuiTabs-scroller MuiTabs-scrollableY css-vhlxl6" style=""><div aria-orientation="vertical" class="MuiTabs-flexContainer MuiTabs-flexContainerVertical css-j7qwjs" role="tablist"><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary Mui-selected sc-bhjLtx pRPOE css-i5k1e3" tabindex="0" role="tab" aria-selected="true" aria-label="1. Import Required Libraries, 1 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#1.-Import-Required-Libraries" data-discover="true"><span class="sc-hwddKA eMTvcI">1. Import Required Libraries</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="2. Load Dataset from Kaggle, 2 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#2.-Load-Dataset-from-Kaggle" data-discover="true"><span class="sc-hwddKA gUGhRz">2. Load Dataset from Kaggle</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="3. Explore Dataset Structure, 3 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#3.-Explore-Dataset-Structure" data-discover="true"><span class="sc-hwddKA gUGhRz">3. Explore Dataset Structure</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="4. Basic Data Cleaning, 4 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#4.-Basic-Data-Cleaning" data-discover="true"><span class="sc-hwddKA gUGhRz">4. Basic Data Cleaning</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="5. Save Cleaned Dataset, 5 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#5.-Save-Cleaned-Dataset" data-discover="true"><span class="sc-hwddKA gUGhRz">5. Save Cleaned Dataset</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="6. Exploratory Data Analysis (EDA), 6 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#6.-Exploratory-Data-Analysis-(EDA)" data-discover="true"><span class="sc-hwddKA gUGhRz">6. Exploratory Data Analysis (EDA)</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="7. Feature Engineering, 7 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#7.-Feature-Engineering" data-discover="true"><span class="sc-hwddKA gUGhRz">7. Feature Engineering</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="8. Model Training, 8 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#8.-Model-Training" data-discover="true"><span class="sc-hwddKA gUGhRz">8. Model Training</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a><a class="MuiButtonBase-root MuiTab-root MuiTab-textColorPrimary sc-bhjLtx pRPOE css-i5k1e3" tabindex="-1" role="tab" aria-selected="false" aria-label="9. Ensemble and Submission, 9 of 9" href="https://www.kaggle.com/code/fandoulihedi/notebookfa81860c0c#9.-Ensemble-and-Submission" data-discover="true"><span class="sc-hwddKA gUGhRz">9. Ensemble and Submission</span><span class="MuiTouchRipple-root css-w0pj6f"></span></a></div><span class="MuiTabs-indicator css-1phc0gu" style="top: 0px; height: 20px;"></span></div></div></div></div></div></div></div></div></div><div class="sc-hjkjEu jFWWf"><div style="margin-top: 40px; margin-right: 0px;"><div class="sc-jNmoKi eNhlpM"><div class="sc-kpeDgr edcvnM"><div class="sc-jXAUqi jhJbjQ"><div class="sc-gPrgcH ikpjiC sc-ejmMdm gcwVOW"><div class="sc-jfHzLw gEqbgW"><div class="sc-kJNXNN fUHDkB"><img src="./notebookfa81860c0c_files/molnar-1-thumb-muted-03.png" alt="Profile picture for undefined" class="sc-kcoZcm ehuMHA"></div><div class="sc-cmdOMZ ckKefd"><div class="sc-kCuUfV sc-ddXjrL bXQAUF ljoOSl">Competition Notebook</div><p class="sc-fbQrwq sc-NuEbr sc-cCueEX jnmBCO iNYxSZ crvqaB"><a aria-label="Sesame-JCI-Stroke-Prediction opens in new window" class="sc-kjwdDK fDGKWq" href="https://www.kaggle.com/competitions/sesame-jci-stroke-prediction" target="_blank" data-discover="true">Sesame-JCI-Stroke-Prediction</a></p></div></div></div></div></div></div></div><div style="display: block;"><div class="sc-kTNwVl ksSxXa"><div class="sc-kfDIN cWtuVF"><iframe id="rendered-kernel-content" src="./notebookfa81860c0c_files/__results__.html" title="Main Notebook Content" class="sc-bBRAoL cqXQOJ" style="height: 8529px; display: block;"></iframe><div class="sc-icGaOE btCXxh" style="display: none;"><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div><div><div font-size="16" class="sc-cMuefe sc-eJvlPh sc-lkCrJH gRNjxc ehvYen"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div><div font-size="12" class="sc-cMuefe sc-eJvlPh sc-bPkUNa gRNjxc eCPmsr"></div></div></div></div></div></div></div></div><div class="sc-hWirqQ kzuLMO"><div role="separator" class="sc-itBLYH opqTs"></div><div class="sc-gYHUVj sc-cbEcnZ klFHdX duQbbA"><h2 class="sc-dntSTA bNPaHD">Continue exploring</h2><ul class="MuiList-root km-list sc-cpJwns lgKAbz css-1uzmcsd" role="list"><li class="MuiListItem-root MuiListItem-gutters MuiListItem-divider sc-jkvfRO hwBMTA css-1nkzj85" aria-label="Input List Item"><div class="sc-eXVaYZ idRORJ sc-lcWiVL kjPHOc km-listitem--medium"><a aria-label="Input" tabindex="0" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/input_light.svg" alt=""></div></div><div class="sc-kSaXSp kjrBhT"><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno">Input</div><span class="sc-eqNDNG sc-fYRIQK lmrToK ktLrYU">1 file</span></div></div></a><div class="sc-gWaSiO dFiTXv"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true">arrow_right_alt</span></div></div></li><li class="MuiListItem-root MuiListItem-gutters MuiListItem-divider sc-jkvfRO hwBMTA css-1nkzj85" aria-label="Output List Item"><div class="sc-eXVaYZ idRORJ sc-lcWiVL kjPHOc km-listitem--medium"><a aria-label="Output" tabindex="0" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/output_light.svg" alt=""></div></div><div class="sc-kSaXSp kjrBhT"><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno">Output</div><span class="sc-eqNDNG sc-fYRIQK lmrToK ktLrYU">1 file</span></div></div></a><div class="sc-gWaSiO dFiTXv"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true">arrow_right_alt</span></div></div></li><li class="MuiListItem-root MuiListItem-gutters MuiListItem-divider sc-jkvfRO hwBMTA css-1nkzj85" aria-label="Logs List Item"><div class="sc-eXVaYZ idRORJ sc-lcWiVL kjPHOc km-listitem--medium"><a aria-label="Logs" tabindex="0" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/logs_light.svg" alt=""></div></div><div class="sc-kSaXSp kjrBhT"><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno">Logs</div><span class="sc-eqNDNG sc-fYRIQK lmrToK ktLrYU">42.6 second run - successful</span></div></div></a><div class="sc-gWaSiO dFiTXv"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true">arrow_right_alt</span></div></div></li><li class="MuiListItem-root MuiListItem-gutters sc-jkvfRO hwBMTA css-22wag7" aria-label="Comments List Item"><div class="sc-eXVaYZ idRORJ sc-lcWiVL kjPHOc km-listitem--medium"><a aria-label="Comments" tabindex="0" role="link" class="sc-fpikKz brCOKE"><div class="sc-jxYSNo eWhlcc"><div class="sc-zOxLx gBzEKy"><div class="sc-cgHfjM bOWpLD"><img src="./notebookfa81860c0c_files/comments_light.svg" alt=""></div></div><div class="sc-kSaXSp kjrBhT"><div class="sc-kCuUfV sc-bjxVRI bXQAUF dEeLno">Comments</div><span class="sc-eqNDNG sc-fYRIQK lmrToK ktLrYU">0 comments</span></div></div></a><div class="sc-gWaSiO dFiTXv"><span class="google-symbols notranslate MuiIcon-root MuiIcon-fontSizeMedium sc-jytpVa hKbuim notranslate css-1jgtvd5" aria-hidden="true">arrow_right_alt</span></div></div></li></ul></div></div><div></div><div></div></div></div></div></div></div><div aria-live="polite" aria-atomic="true" role="alert" class="sc-jTXfsZ DtMhK">'submission_new.csv' will be evaluated for your final score</div></div>
+
+
+<script type="text/javascript" crossorigin="anonymous" src="./notebookfa81860c0c_files/config.js.téléchargement"></script></body></html>
